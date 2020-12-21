@@ -4,6 +4,7 @@ import homeworks.HomeworksUtils.TaskSyntax
 
 object task_caesar {
 
+  val alphabetLength: Int = 'Z'.toChar - 'A'.toChar + 1
   /**
    * В данном задании Вам предлагается реализовать функции,
    * реализующие кодирование/декодирование строки шифром Цезаря.
@@ -18,7 +19,11 @@ object task_caesar {
    * @return зашифрованное слово
    */
   def encrypt(word: String, offset: Int): String =
-    task"Реализуйте метод `encrypt`"()
+    word.map { ch =>
+      val normOffset = offset % alphabetLength
+      val chCode = 'A'.toChar + (ch.toByte - 'A'.toByte + normOffset) % alphabetLength
+      chCode.toChar
+    }
 
   /**
    * @param cipher шифр, который необходимо расшифровать
@@ -26,6 +31,10 @@ object task_caesar {
    * @return расшифрованное слово
    */
   def decrypt(cipher: String, offset: Int): String =
-    task"Реализуйте метод `decrypt`"()
+    cipher.map { ch =>
+      val normOffset = offset % alphabetLength
+      val chCode = 'A'.toChar + (ch.toByte - 'A'.toByte + alphabetLength - normOffset) % alphabetLength
+      chCode.toChar
+    }
 
 }
