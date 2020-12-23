@@ -2,7 +2,6 @@ package homeworks.futures
 
 import homeworks.HomeworksUtils.TaskSyntax
 
-import scala.Nil
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -20,16 +19,13 @@ object task_futures_sequence {
    * @param futures список асинхронных задач
    * @return асинхронную задачу с кортежом из двух списков
    */
-  def fullSequence[A](futures: List[Future[A]]): Future[(List[A], List[Throwable])] = {
-    val fs = futures.map(f => f.recover { case ex => ex })
-    Future.sequence(fs)
-      .map(l => l.foldLeft((Nil: List[A], Nil: List[Throwable])) {
-        (acc, r) =>
-          r match {
-            case r: Throwable => (acc._1, r :: acc._2)
-            case r: A => (r :: acc._1, acc._2)
-          }
-      })
-      .map(t => (t._1.reverse, t._2.reverse))
-  }
+  def fullSequence[A](futures: List[Future[A]]): Future[(List[A], List[Throwable])] =
+    futures.foldLeft(Future.successful((Nil: List[A], Nil: List[Throwable]))) {
+      (acc, f) =>
+        acc.flatMap {
+          case (succeeded, failed) =>
+            f.map(r => (succeeded :+ r, failed))
+              .recover { ex => (succeeded, failed :+ ex) }
+        }
+    }
 }
