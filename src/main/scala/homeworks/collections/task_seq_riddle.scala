@@ -19,14 +19,14 @@ object task_seq_riddle {
    * */
 
   def nextLine(currentLine: List[Int]): List[Int] =
-    currentLine.foldLeft(List[(Int, Int)]()) {
-      (acc, i) =>
+    currentLine.foldRight(List[(Int, Int)]()) {
+      (i, acc) =>
         acc match {
           case Nil => List((i, 1))
           case (ii, n) :: xs if ii == i => (ii, n + 1) :: xs
           case _ => (i, 1) :: acc
         }
-    }.reverse.flatMap(x => List(x._2, x._1))
+    }.flatMap { case (i, n) => List(n, i) }
 
   /**
    * 2. Реализуйте ленивый список, который генерирует данную последовательность
@@ -36,8 +36,7 @@ object task_seq_riddle {
    *
    */
 
-  val funSeq: LazyList[List[Int]] = {
-    def loop(l: List[Int]): LazyList[List[Int]] = l #:: loop(nextLine(l))
-    loop(List(1))
-  }
+  val funSeq: LazyList[List[Int]] = List(1) #:: funSeq.map(nextLine)
+
+
 }

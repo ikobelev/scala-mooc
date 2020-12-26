@@ -4,7 +4,6 @@ import homeworks.HomeworksUtils.TaskSyntax
 
 object task_caesar {
 
-  val alphabetLength: Int = 'Z'.toChar - 'A'.toChar + 1
   /**
    * В данном задании Вам предлагается реализовать функции,
    * реализующие кодирование/декодирование строки шифром Цезаря.
@@ -18,23 +17,23 @@ object task_caesar {
    * @param offset сдвиг вперёд по алфавиту
    * @return зашифрованное слово
    */
-  def encrypt(word: String, offset: Int): String =
-    word.map { ch =>
-      val normOffset = offset % alphabetLength
-      val chCode = 'A'.toChar + (ch.toByte - 'A'.toByte + normOffset) % alphabetLength
-      chCode.toChar
-    }
+  def encrypt(word: String, offset: Int): String = doCrypt(word, offset, false)
 
   /**
    * @param cipher шифр, который необходимо расшифровать
    * @param offset сдвиг вперёд по алфавиту
    * @return расшифрованное слово
    */
-  def decrypt(cipher: String, offset: Int): String =
-    cipher.map { ch =>
-      val normOffset = offset % alphabetLength
-      val chCode = 'A'.toChar + (ch.toByte - 'A'.toByte + alphabetLength - normOffset) % alphabetLength
+  def decrypt(cipher: String, offset: Int): String = doCrypt(cipher, offset, true)
+
+  def doCrypt(word: String, offset: Int, reverseDirection: Boolean): String = {
+    val alphabetLength: Int = ('A' to 'Z').length
+    val normOffset =
+      if (reverseDirection) alphabetLength - offset % alphabetLength
+      else offset % alphabetLength
+    word.map { ch =>
+      val chCode = 'A' + (ch - 'A' + normOffset) % alphabetLength
       chCode.toChar
     }
-
+  }
 }
